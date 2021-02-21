@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/product.dart';
+import '../providers/product_provider.dart';
 import '../providers/products_provider.dart';
 
 class ProductDetailScreen extends StatelessWidget {
@@ -13,8 +13,10 @@ class ProductDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final String productId =
         ModalRoute.of(context).settings.arguments as String;
-    final Product selectedProduct =
-        Provider.of<Products>(context).findProductById(productId);
+    final Product selectedProduct = Provider.of<Products>(
+      context,
+      listen: false,
+    ).findProductById(productId);
 
     return Scaffold(
       appBar: AppBar(
