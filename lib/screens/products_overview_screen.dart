@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../widgets/product_grid.dart';
 import '../widgets/badge.dart';
+
+import '../screens/cart_screen.dart';
 import '../providers/cart_provider.dart';
 
 enum FilterOptions {
@@ -50,8 +52,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ],
           ), //End menu
           Consumer<Cart>(
-            builder: (ctx, cart, ch) => Badge(
-              child: ch,
+            builder: (ctx, cart, child) => Badge(
+              child: child,
               value: cart.itemCount.toString(),
               color: Colors.black,
             ),
@@ -59,9 +61,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               icon: Icon(
                 Icons.shopping_cart,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routeName);
+              },
             ), //IconButton
-          ),
+          ), //Consumer
         ],
       ), //AppBar
       body: ProductGrid(_showOnlyFavorites), //GridView
