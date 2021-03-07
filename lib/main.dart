@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.deepPurple,
           accentColor: Colors.white,
           splashColor: Colors.deepOrange,
+          errorColor: Colors.deepPurple,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           fontFamily: 'Lato',
         ),

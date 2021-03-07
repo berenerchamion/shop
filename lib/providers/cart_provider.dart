@@ -17,7 +17,7 @@ class Cart with ChangeNotifier {
     return totalCount;
   }
 
-  double get totalAmount{
+  double get totalAmount {
     double totalAmount = 0.0;
 
     _items.forEach((key, item) {
@@ -49,6 +49,11 @@ class Cart with ChangeNotifier {
               quantity: 1,
               unitPrice: price));
     }
+    notifyListeners();
+  }
+
+  void removeItem(String productId) {
+    _items.remove(productId);
     notifyListeners();
   }
 }

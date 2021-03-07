@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
 
 class CartItem extends StatelessWidget {
   final String id;
+  final String productId;
   final String title;
   final double price;
   final int quantity;
 
   CartItem(
     this.id,
+    this.productId,
     this.title,
     this.price,
     this.quantity,
@@ -15,28 +19,54 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 4,
+    return Dismissible(
+      key: ValueKey(this.id),
+      background: Container(
+        color: Theme.of(context).primaryColor,
+        child: Icon(
+          Icons.delete,
+          color: Theme.of(context).accentColor,
+          size: 30,
+        ),
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.only(
+          right: 15,
+        ),
+        margin: EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 4,
+        ),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: ListTile(
-          leading: Chip(
-            label: Text(
-              '\$${price}',
-              style: TextStyle(
-                color: Theme.of(context).accentColor,
+      direction: DismissDirection.endToStart,
+      onDismissed: (direction) {
+        Provider.of<Cart>(
+          context,
+          listen: false,
+        ).removeItem(this.productId);
+      },
+      child: Card(
+        margin: EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 4,
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: ListTile(
+            leading: Chip(
+              label: Text(
+                '\$${(price * quantity)}',
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                ),
               ),
+              backgroundColor: Theme.of(context).primaryColor,
             ),
-            backgroundColor: Theme.of(context).primaryColor,
+            title: Text(title),
+            subtitle: Text(
+              'Unit Price: \$${price}',
+            ),
+            trailing: Text('$quantity x'),
           ),
-          title: Text(title),
-          subtitle: Text(
-            'Total: \$${(price * quantity)}',
-          ),
-          trailing: Text('$quantity x'),
         ),
       ),
     );
