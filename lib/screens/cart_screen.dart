@@ -39,9 +39,7 @@ class CartScreen extends StatelessWidget {
                         color: Theme.of(context).accentColor,
                       ),
                     ),
-                    backgroundColor: Theme.of(
-                      contex,
-                    ).primaryColor,
+                    backgroundColor: Theme.of(context).primaryColor,
                   ), //Chip
                   FlatButton(
                     onPressed: () {
@@ -52,6 +50,7 @@ class CartScreen extends StatelessWidget {
                         cart.items.values.toList(),
                         cart.totalAmount,
                       );
+                      cart.emptyCart();
                     },
                     child: Text('ORDER NOW!'),
                     textColor: Theme.of(context).splashColor,

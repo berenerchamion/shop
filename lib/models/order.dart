@@ -3,13 +3,13 @@ import 'package:flutter/foundation.dart';
 
 import './cart_item.dart';
 
-class OrderItem {
+class Order {
   final String id;
   final double amount;
   final List<CartItem> products;
   final DateTime orderDateTime;
 
-  OrderItem({
+  Order({
     @required this.id,
     @required this.amount,
     @required this.products,
