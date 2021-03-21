@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../widgets/product_grid.dart';
 import '../widgets/badge.dart';
+import '../widgets/app_drawer.dart';
 
 import '../screens/cart_screen.dart';
 import '../providers/cart_provider.dart';
@@ -13,6 +14,7 @@ enum FilterOptions {
 }
 
 class ProductsOverviewScreen extends StatefulWidget {
+  static const String routeName = '/';
   @override
   _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
 }
@@ -68,6 +70,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ), //Consumer
         ],
       ), //AppBar
+      drawer: AppDrawer(),
       body: ProductGrid(_showOnlyFavorites), //GridView
     );
   }
