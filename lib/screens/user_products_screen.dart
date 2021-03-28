@@ -10,7 +10,6 @@ class UserProductsScreen extends StatelessWidget {
   static const String routeName = '/user-products-screen';
   @override
   Widget build(BuildContext context) {
-
     final productsData = Provider.of<Products>(context);
 
     return Scaffold(
@@ -30,7 +29,12 @@ class UserProductsScreen extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: ListView.builder(
           itemCount: productsData.products.length,
-            itemBuilder: (ctx, i) => UserProductItem(productsData.products[i]),
+          itemBuilder: (ctx, i) => Column(
+            children: <Widget> [
+              UserProductItem(productsData.products[i]),
+              Divider(),
+            ],
+          ),
         ),
       ),
     );
