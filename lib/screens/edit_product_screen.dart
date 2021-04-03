@@ -49,13 +49,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveProduct() {
-    _form.currentState.save();
-    print('Product: ${_product.title} Price: ${_product.price} Description: ${_product.description} ImageUrl: ${_product.imageUrl}');
+    final bool isValid = _form.currentState.validate();
+
+    if (isValid) {
+      _form.currentState.save();
+      print(
+          'Product: ${_product.title} Price: ${_product.price} Description: ${_product.description} ImageUrl: ${_product.imageUrl}');
+    } else {
+      print('Bogus product!');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Add/Edit Product'),
@@ -77,6 +83,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Title',
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).errorColor,
+                  ),
                 ),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (value) {
@@ -91,10 +100,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     imageUrl: _product.imageUrl,
                   );
                 },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Title cannot be an empty string';
+                  } else {
+                    return null;
+                  }
+                },
               ), //TextFormField
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Price',
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).errorColor,
+                  ),
                 ),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -111,10 +130,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     imageUrl: _product.imageUrl,
                   );
                 },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'You need to enter a price';
+                  } else if (double.tryParse(value) != null) {
+                    if (double.parse(value) <= 0.00) {
+                      return 'A price has to be greater than zero.';
+                    } else {
+                      return null;
+                    }
+                  } else {
+                    return null;
+                  }
+                },
               ), //TextFormField
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Description',
+                  errorStyle: TextStyle(
+                    color: Theme.of(context).errorColor,
+                  ),
                 ),
                 keyboardType: TextInputType.multiline,
                 maxLines: 3,
@@ -127,6 +162,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     description: value.trim(),
                     imageUrl: _product.imageUrl,
                   );
+                },
+                validator: (value) {
+                  if (value.isEmpty || value.length < 25) {
+                    return 'Come on, you need a decent description!';
+                  } else {
+                    return null;
+                  }
                 },
               ), //TextFormField
               Row(
@@ -156,7 +198,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ), //Container
                   Expanded(
                     child: TextFormField(
-                      decoration: InputDecoration(labelText: 'Image URL'),
+                      decoration: InputDecoration(
+                        labelText: 'Image URL',
+                        errorStyle: TextStyle(
+                          color: Theme.of(context).errorColor,
+                        ),
+                      ),
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
                       controller: _imageUrlController,
@@ -173,6 +220,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           description: _product.description,
                           imageUrl: value.trim(),
                         );
+                      },
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Image URL cannot be empty.';
+                        } else if (!value.startsWith('https://')) {
+                          return 'Hey, wake up https is required these days!.';
+                        } else if (!value.endsWith('.png') &&
+                            !value.endsWith('.jpg') &&
+                            !value.endsWith('.jpeg')) {
+                          return 'Hey, what kind of image is that? PNG or JPEG please.';
+                        } else {
+                          return null;
+                        }
                       },
                     ),
                   ),
