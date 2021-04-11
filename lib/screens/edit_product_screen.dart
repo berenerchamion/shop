@@ -19,14 +19,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   // elements and access to them outside teh build method
   final _form = GlobalKey<FormState>();
   var _isInit = true;
-
-  Product _product = Product(
-    id: null,
-    title: '',
-    price: 0,
-    description: '',
-    imageUrl: '',
-  );
+  //will get initialized below in didChangeDependencies()
+  Product _product;
 
   Product _initValues = Product(
     id: null,
@@ -44,7 +38,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void didChangeDependencies() {
-    print('We are in the initializer...');
     if (_isInit == true) {
       _product = ModalRoute.of(context).settings.arguments as Product;
       if (_product != null) {
@@ -60,8 +53,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
         //Have to set the controller here instead.
         _imageUrlController.text = _product.imageUrl;
       }
-      else
-        print('Houston, we have a problem...');
+      else {
+        _product = Product(
+          id: null,
+          title: '',
+          price: 0,
+          description: '',
+          imageUrl: '',
+        );
+      }
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -86,6 +86,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveProduct() {
+
     final bool isValid = _form.currentState.validate();
 
     if (isValid) {
