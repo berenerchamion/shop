@@ -18,6 +18,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   //This key makes teh connection between the form
   // elements and access to them outside teh build method
   final _form = GlobalKey<FormState>();
+  var _isInit = true;
 
   Product _product = Product(
     id: null,
@@ -27,9 +28,43 @@ class _EditProductScreenState extends State<EditProductScreen> {
     imageUrl: '',
   );
 
+  Product _initValues = Product(
+    id: null,
+    title: '',
+    price: 0,
+    description: '',
+    imageUrl: '',
+  );
+
+  @override
   void initState() {
     _imageUrlFocusNode.addListener(_updateImageUrl);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    print('We are in the initializer...');
+    if (_isInit == true) {
+      _product = ModalRoute.of(context).settings.arguments as Product;
+      if (_product != null) {
+        _initValues = Product(
+          id: _product.id,
+          title: _product.title,
+          price: _product.price,
+          description: _product.description,
+          imageUrl: '',
+        );
+        //imageUrl cannot be set in the same way as the others because of the text controller
+        //you can't set the initialValue on the field if you have a controller
+        //Have to set the controller here instead.
+        _imageUrlController.text = _product.imageUrl;
+      }
+      else
+        print('Houston, we have a problem...');
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
@@ -55,14 +90,23 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
     if (isValid) {
       _form.currentState.save();
-      print(
-          'Product: ${_product.title} Price: ${_product.price} Description: ${_product.description} ImageUrl: ${_product.imageUrl}');
-      Provider.of<Products>(context, listen: false,).addProduct(_product);
-      Navigator.of(context).pop();
+
+      if (_product.id != null) {
+        Provider.of<Products>(
+          context,
+          listen: false,
+        ).updateProduct(_product);
+        Navigator.of(context).pop();
+      } else {
+        Provider.of<Products>(
+          context,
+          listen: false,
+        ).addProduct(_product);
+        Navigator.of(context).pop();
+      }
     } else {
       print('Bogus product!');
     }
-
   }
 
   @override
@@ -86,6 +130,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: <Widget>[
               TextFormField(
+                initialValue: _initValues.title,
                 decoration: InputDecoration(
                   labelText: 'Title',
                   errorStyle: TextStyle(
@@ -103,6 +148,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     price: _product.price,
                     description: _product.description,
                     imageUrl: _product.imageUrl,
+                    isFavorite: _product.isFavorite,
                   );
                 },
                 validator: (value) {
@@ -114,6 +160,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ), //TextFormField
               TextFormField(
+                initialValue: _initValues.price.toString(),
                 decoration: InputDecoration(
                   labelText: 'Price',
                   errorStyle: TextStyle(
@@ -133,6 +180,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     price: double.parse(value),
                     description: _product.description,
                     imageUrl: _product.imageUrl,
+                    isFavorite: _product.isFavorite,
                   );
                 },
                 validator: (value) {
@@ -150,6 +198,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ), //TextFormField
               TextFormField(
+                initialValue: _initValues.description,
                 decoration: InputDecoration(
                   labelText: 'Description',
                   errorStyle: TextStyle(
@@ -166,6 +215,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     price: _product.price,
                     description: value.trim(),
                     imageUrl: _product.imageUrl,
+                    isFavorite: _product.isFavorite,
                   );
                 },
                 validator: (value) {
@@ -224,6 +274,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           price: _product.price,
                           description: _product.description,
                           imageUrl: value.trim(),
+                          isFavorite: _product.isFavorite,
                         );
                       },
                       validator: (value) {
