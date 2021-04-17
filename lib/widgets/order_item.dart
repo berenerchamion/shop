@@ -25,7 +25,7 @@ class _OrderItemState extends State<OrderItem> {
       child: Column(
         children: <Widget>[
           ListTile(
-            title: Text('\$${widget.order.amount}'),
+            title: Text('\$${widget.order.amount.toStringAsFixed(2)}'),
             subtitle: Text(DateFormat('MM/dd/yyyy hh:mm aaa')
                 .format(widget.order.orderDateTime)),
             trailing: IconButton(
@@ -41,7 +41,7 @@ class _OrderItemState extends State<OrderItem> {
           ),
           if (_expanded)
             Container(
-              height: min(widget.order.products.length * 20.0 + 10, 120),
+              height: min(widget.order.products.length * 30.0 + 10, 120),
               child: ListView(
                 children: widget.order.products
                     .map(
