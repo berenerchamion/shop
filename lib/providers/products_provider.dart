@@ -11,7 +11,7 @@ class Products with ChangeNotifier {
       description: 'A red shirt - it is pretty red!',
       price: 29.99,
       imageUrl:
-      'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
+          'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
     ),
     Product(
       id: 'p2',
@@ -19,7 +19,7 @@ class Products with ChangeNotifier {
       description: 'A nice pair of trousers.',
       price: 59.99,
       imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
     ),
     Product(
       id: 'p3',
@@ -27,7 +27,7 @@ class Products with ChangeNotifier {
       description: 'Warm and cozy - exactly what you need for the winter.',
       price: 19.99,
       imageUrl:
-      'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+          'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
     ),
     Product(
       id: 'p4',
@@ -35,7 +35,7 @@ class Products with ChangeNotifier {
       description: 'Prepare any meal you want.',
       price: 49.99,
       imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     ),
   ];
 
@@ -47,44 +47,47 @@ class Products with ChangeNotifier {
     return _products.where((product) => product.isFavorite).toList();
   }
 
-  Product findProductById (String id) {
+  Product findProductById(String id) {
     return _products.firstWhere((prod) => prod.id == id);
   }
 
-   void addProduct(Product product) {
-    Uri uri = Uri.parse('https://hob-shop-default-rtdb.firebaseio.com/products.json');
-    post(uri, body: json.encode({
-      'title': product.title,
-      'description': product.description,
-      'imageUrl': product.imageUrl,
-      'price': product.price,
-      'isFavorite': product.isFavorite,
-    }),);
-    final newProduct = Product(
-      id: DateTime.now().toString(),
-      title: product.title,
-      price: product.price,
-      description: product.description,
-      imageUrl: product.imageUrl,
-    );
-    _products.add(newProduct);
-    notifyListeners();
-   }
+  void addProduct(Product product) {
+    Uri uri =
+        Uri.parse('https://hob-shop-default-rtdb.firebaseio.com/products.json');
+    post(
+      uri,
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'imageUrl': product.imageUrl,
+        'price': product.price,
+        'isFavorite': product.isFavorite,
+      }),
+    ).then((response) {
+      final newProduct = Product(
+        id: DateTime.now().toString(),
+        title: product.title,
+        price: product.price,
+        description: product.description,
+        imageUrl: product.imageUrl,
+      );
+      _products.add(newProduct);
+      notifyListeners();
+    });
+  }
 
-   void updateProduct(Product product) {
+  void updateProduct(Product product) {
     final productIndex = _products.indexWhere((p) => p.id == product.id);
     if (productIndex >= 0) {
       _products[productIndex] = product;
       notifyListeners();
-    }
-    else {
+    } else {
       print('Cannot update product, not found.');
     }
-   }
+  }
 
-   void deleteProduct (Product product) {
+  void deleteProduct(Product product) {
     _products.removeWhere((p) => p.id == product.id);
     notifyListeners();
-   }
-
+  }
 }
