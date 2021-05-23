@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'product_provider.dart';
+import '../screens/user_products_screen.dart';
 
 class Products with ChangeNotifier {
   List<Product> _products = [
@@ -51,10 +52,10 @@ class Products with ChangeNotifier {
     return _products.firstWhere((prod) => prod.id == id);
   }
 
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     Uri uri =
-        Uri.parse('https://hob-shop-default-rtdb.firebaseio.com/products.json');
-    post(
+        Uri.parse('https://hob-shop-default-rtdb.firebaseio.com/products');
+    return post(
       uri,
       body: json.encode({
         'title': product.title,
@@ -65,7 +66,7 @@ class Products with ChangeNotifier {
       }),
     ).then((response) {
       final newProduct = Product(
-        id: DateTime.now().toString(),
+        id: json.decode(response.body)['name'],
         title: product.title,
         price: product.price,
         description: product.description,
@@ -73,6 +74,9 @@ class Products with ChangeNotifier {
       );
       _products.add(newProduct);
       notifyListeners();
+    }).catchError((error) {
+      print(error);
+      throw error;
     });
   }
 
