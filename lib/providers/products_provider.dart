@@ -54,7 +54,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) {
     Uri uri =
-        Uri.parse('https://hob-shop-default-rtdb.firebaseio.com/products');
+        Uri.parse('https://hob-shop-default-rtdb.firebaseio.com/products.json');
     return post(
       uri,
       body: json.encode({
