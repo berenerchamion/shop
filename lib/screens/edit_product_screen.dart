@@ -86,7 +86,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveProduct() {
+  Future <void> _saveProduct() async {
     final bool isValid = _form.currentState.validate();
 
     if (isValid) {
@@ -106,35 +106,40 @@ class _EditProductScreenState extends State<EditProductScreen> {
         });
         Navigator.of(context).pop();
       } else {
-        Provider.of<Products>(
-          context,
-          listen: false,
-        ).addProduct(_product).catchError((error) {
-          return showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: Text('An Error Occurred!'),
-              content: Text(error.toString()),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('Ok'),
-                  onPressed: () {
-                    setState(() {
-                      _isLoading = false;
-                    });
-                    Navigator.of(context).popAndPushNamed(UserProductsScreen.routeName);
-                  },
-                ),
-              ],
-            ),
-          );
-        }).then((_) {
+        try {
+          await Provider.of<Products>(
+            context,
+            listen: false,
+          ).addProduct(_product);
+        } catch (error) {
+            await showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text('An Error Occurred!'),
+                content: Text(error.toString()),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            );
+        }
+        finally {
           setState(() {
             _isLoading = false;
           });
-          print('I am in the then...');
-          Navigator.of(context).pop();
-        });
+          //I like this experience better in terms of where to land after an
+          //error in the save call. 
+          Navigator.of(context)
+              .popAndPushNamed(UserProductsScreen.routeName);
+        }
       }
     } else {
       print('Bogus product!');
