@@ -8,6 +8,8 @@ class Products with ChangeNotifier {
   List<Product> _products = [];
   final String _url =
       'https://hob-shop-default-rtdb.firebaseio.com/products.json';
+  final String _baseUrl =
+      'https://hob-shop-default-rtdb.firebaseio.com/products/';
 
   List<Product> get products {
     return [..._products];
@@ -76,6 +78,15 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(Product product) async {
     final productIndex = _products.indexWhere((p) => p.id == product.id);
     if (productIndex >= 0) {
+      final url = '$_baseUrl${product.id}.json';
+      print(url);
+      Uri uri = Uri.parse(url);
+      patch(uri, body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'price': product.price,
+        'imageUrl': product.imageUrl,
+      }));
       _products[productIndex] = product;
       notifyListeners();
     } else {
