@@ -35,7 +35,8 @@ class MyApp extends StatelessWidget {
         title: 'HOB Shop',
         theme: ThemeData(
           primarySwatch: Colors.deepPurple,
-          accentColor: Colors.white,
+          accentColor: Colors.deepOrange,
+          buttonColor: Colors.white,
           splashColor: Colors.deepOrange,
           errorColor: Colors.deepPurple,
           visualDensity: VisualDensity.adaptivePlatformDensity,

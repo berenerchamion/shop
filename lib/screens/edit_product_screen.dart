@@ -136,7 +136,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             _isLoading = false;
           });
           //I like this experience better in terms of where to land after an
-          //error in the save call. 
+          //error in the save call.
           Navigator.of(context)
               .popAndPushNamed(UserProductsScreen.routeName);
         }

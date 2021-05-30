@@ -37,14 +37,14 @@ class ProductItem extends StatelessWidget {
               icon: Icon(
                 product.isFavorite ? Icons.favorite : Icons.favorite_border,
               ),
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).buttonColor,
               onPressed: () {
                 product.toggleFavoriteStatus();
               },
             ),
             trailing: IconButton(
               icon: Icon(Icons.shopping_cart),
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).buttonColor,
               onPressed: () {
                 ScaffoldMessenger.maybeOf(context).hideCurrentSnackBar();
                 cart.addItem(

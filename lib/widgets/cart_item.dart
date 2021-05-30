@@ -78,7 +78,7 @@ class CartItem extends StatelessWidget {
               label: Text(
                 '\$${(price * quantity)}',
                 style: TextStyle(
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).buttonColor,
                 ),
               ),
               backgroundColor: Theme.of(context).primaryColor,
