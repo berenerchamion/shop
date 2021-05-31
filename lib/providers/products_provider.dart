@@ -93,7 +93,18 @@ class Products with ChangeNotifier {
   }
 
   void deleteProduct(Product product) {
-    _products.removeWhere((p) => p.id == product.id);
+    final url = '$_baseUrl/${product.id}.json';
+    Uri uri = Uri.parse(url);
+    final existingProductIndex = _products.indexWhere((p) => p.id == product.id);
+    //this trick will force Dart to retain the in memory pointer
+    //while we attempt the delete.
+    final existingProduct = _products[existingProductIndex];
+    _products.removeAt(existingProductIndex);
+    //Just a different way to catch an error,
+    // could have used futures and all that.
+    delete(uri).catchError((_) {
+      _products.insert(existingProductIndex, product);
+    });
     notifyListeners();
   }
 }

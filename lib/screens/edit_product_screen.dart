@@ -86,12 +86,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  Future <void> _saveProduct() async {
+  Future<void> _saveProduct() async {
     final bool isValid = _form.currentState.validate();
 
     if (isValid) {
       _form.currentState.save();
-
       setState(() {
         _isLoading = true;
       });
@@ -122,13 +121,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ),
           );
         }
-        finally {
-          setState(() {
-            _isLoading = false;
-          });
-          Navigator.of(context)
-              .popAndPushNamed(UserProductsScreen.routeName);
-        }
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).popAndPushNamed(UserProductsScreen.routeName);
       } else {
         try {
           await Provider.of<Products>(
@@ -136,34 +132,31 @@ class _EditProductScreenState extends State<EditProductScreen> {
             listen: false,
           ).addProduct(_product);
         } catch (error) {
-            await showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                title: Text('An error occurred while adding the product!'),
-                content: Text(error.toString()),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('Ok'),
-                    onPressed: () {
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            );
+          await showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text('An error occurred while adding the product!'),
+              content: Text(error.toString()),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
         }
-        finally {
-          setState(() {
-            _isLoading = false;
-          });
-          //I like this experience better in terms of where to land after an
-          //error in the save call.
-          Navigator.of(context)
-              .popAndPushNamed(UserProductsScreen.routeName);
-        }
+        setState(() {
+          _isLoading = false;
+        });
+        //I like this experience better in terms of where to land after an
+        //error in the save call.
+        Navigator.of(context).popAndPushNamed(UserProductsScreen.routeName);
       }
     } else {
       print('Bogus product!');
