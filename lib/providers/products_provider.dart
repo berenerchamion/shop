@@ -9,14 +9,14 @@ class Products with ChangeNotifier {
   final String _url =
       'https://hob-shop-default-rtdb.firebaseio.com/products.json';
   final String _baseUrl =
-      'https://hob-shop-default-rtdb.firebaseio.com/products/';
+      'https://hob-shop-default-rtdb.firebaseio.com/products';
 
   List<Product> get products {
     return [..._products];
   }
 
   Future<void> fetchProducts() async {
-    Uri uri = Uri.parse(_url);
+    Uri uri = Uri.parse('${_baseUrl}.json');
     try {
       final response = await get(uri);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -49,7 +49,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     try {
-      Uri uri = Uri.parse(_url);
+      Uri uri = Uri.parse('${_baseUrl}.json');
       final response = await post(
         uri,
         body: json.encode({
@@ -70,7 +70,6 @@ class Products with ChangeNotifier {
       _products.add(newProduct);
       notifyListeners();
     } catch (error) {
-      print(error);
       throw error;
     }
   }
@@ -78,8 +77,7 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(Product product) async {
     final productIndex = _products.indexWhere((p) => p.id == product.id);
     if (productIndex >= 0) {
-      final url = '$_baseUrl${product.id}.json';
-      print(url);
+      final url = '$_baseUrl/${product.id}.json';
       Uri uri = Uri.parse(url);
       patch(uri, body: json.encode({
         'title': product.title,

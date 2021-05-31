@@ -97,14 +97,38 @@ class _EditProductScreenState extends State<EditProductScreen> {
       });
 
       if (_product.id != null) {
-        await Provider.of<Products>(
-          context,
-          listen: false,
-        ).updateProduct(_product);
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
+        try {
+          await Provider.of<Products>(
+            context,
+            listen: false,
+          ).updateProduct(_product);
+        } catch (error) {
+          await showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text('An error occurred while updating!'),
+              content: Text(error.toString()),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+        finally {
+          setState(() {
+            _isLoading = false;
+          });
+          Navigator.of(context)
+              .popAndPushNamed(UserProductsScreen.routeName);
+        }
       } else {
         try {
           await Provider.of<Products>(
@@ -115,7 +139,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             await showDialog(
               context: context,
               builder: (ctx) => AlertDialog(
-                title: Text('An Error Occurred!'),
+                title: Text('An error occurred while adding the product!'),
                 content: Text(error.toString()),
                 actions: <Widget>[
                   TextButton(

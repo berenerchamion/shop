@@ -37,6 +37,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       setState(() {
         _isLoading = true;
       });
+      //todo Need to add an error handler here
       Provider.of<Products>(context).fetchProducts().then((_) {
         setState(() {
           _isLoading = false;
