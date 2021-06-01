@@ -3,6 +3,8 @@ import 'package:http/http.dart';
 import 'dart:convert';
 import 'product_provider.dart';
 import '../screens/user_products_screen.dart';
+import '../models/http_exception.dart';
+import '../models/product_exception.dart';
 
 class Products with ChangeNotifier {
   List<Product> _products = [];
@@ -79,32 +81,40 @@ class Products with ChangeNotifier {
     if (productIndex >= 0) {
       final url = '$_baseUrl/${product.id}.json';
       Uri uri = Uri.parse(url);
-      patch(uri, body: json.encode({
+      final response = await patch(uri, body: json.encode({
         'title': product.title,
         'description': product.description,
         'price': product.price,
         'imageUrl': product.imageUrl,
       }));
-      _products[productIndex] = product;
-      notifyListeners();
+      if (response.statusCode >= 400) {
+        throw (HttpException('HTTP $response.statusCode error while editing product.'));
+      }
+      else {
+        _products[productIndex] = product;
+        notifyListeners();
+      }
     } else {
-      print('Cannot update product, not found.');
+      throw (ProductException('Product ID not found. Editing failed.'));
     }
   }
 
-  void deleteProduct(Product product) {
+  Future<void> deleteProduct(Product product) async {
     final url = '$_baseUrl/${product.id}.json';
     Uri uri = Uri.parse(url);
     final existingProductIndex = _products.indexWhere((p) => p.id == product.id);
-    //this trick will force Dart to retain the in memory pointer
-    //while we attempt the delete.
-    final existingProduct = _products[existingProductIndex];
+    var existingProduct = _products[existingProductIndex];
+    //remove the product from memory
     _products.removeAt(existingProductIndex);
-    //Just a different way to catch an error,
-    // could have used futures and all that.
-    delete(uri).catchError((_) {
-      _products.insert(existingProductIndex, product);
-    });
     notifyListeners();
+    //remove the product from firebase
+    final response = await delete(uri).then((response){
+      if (response.statusCode >= 400) {
+        _products.insert(existingProductIndex, existingProduct);
+        notifyListeners();
+        throw (HttpException('HTTP $response.statusCode error while deleting product.'));
+      }
+    });
+    existingProduct = null;
   }
 }
