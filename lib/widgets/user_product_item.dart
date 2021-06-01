@@ -12,6 +12,7 @@ class UserProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     return ListTile(
       title: Text(this.product.title),
       leading: CircleAvatar(
@@ -23,7 +24,7 @@ class UserProductItem extends StatelessWidget {
           children: [
             IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () {
+              onPressed: () async {
                 try {
                   Navigator.of(context).pushNamed(
                     EditProductScreen.routeName,
@@ -31,23 +32,22 @@ class UserProductItem extends StatelessWidget {
                   );
                 }
                 catch (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  scaffoldMessenger.showSnackBar(SnackBar(
                     content: Text(error.toString()),
                   ));
                 }
-
               },
             ),
             IconButton(
               icon: Icon(Icons.delete),
-              onPressed: () {
+              onPressed: () async {
                 try {
-                  Provider.of<Products>(
+                  await Provider.of<Products>(
                     context,
                     listen: false,
                   ).deleteProduct(this.product);
                 } catch (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  scaffoldMessenger.showSnackBar(SnackBar(
                     content: Text('Deleting product failed.'),
                   ));
                 }
