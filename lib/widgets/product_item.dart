@@ -6,7 +6,7 @@ import '../providers/cart_provider.dart';
 class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //final product = Provider.of<Product>(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     return Consumer2<Product, Cart>(
       builder: (ctx, product, cart, child) => ClipRRect(
         borderRadius: BorderRadius.circular(5),
@@ -39,7 +39,14 @@ class ProductItem extends StatelessWidget {
               ),
               color: Theme.of(context).buttonColor,
               onPressed: () {
-                product.toggleFavoriteStatus();
+                try{
+                  product.toggleFavoriteStatus();
+                }
+                catch(error) {
+                  scaffoldMessenger.showSnackBar(SnackBar(
+                    content: Text(error.toString()),
+                  ));
+                }
               },
             ),
             trailing: IconButton(

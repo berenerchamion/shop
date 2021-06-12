@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
+import 'package:shop/models/product_exception.dart';
 import 'dart:convert';
 
 import '../models/http_exception.dart';
-import '../models/product_exception.dart';
 
 class Product with ChangeNotifier {
   @required
@@ -20,7 +20,6 @@ class Product with ChangeNotifier {
 
   final String _baseUrl =
       'https://hob-shop-default-rtdb.firebaseio.com/products';
-
   Product({
     this.id,
     this.title,
@@ -50,6 +49,7 @@ class Product with ChangeNotifier {
       }
     } catch (error) {
       _setFavoriteStatus(currentFavoriteStatus);
+      throw (ProductException('Product not found when setting favorite status.'));
     }
   }
 }
