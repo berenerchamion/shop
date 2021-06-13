@@ -10,7 +10,7 @@ import '../models/product_exception.dart';
 
 class Orders with ChangeNotifier {
   final String _baseUrl =
-      'https://hob-shop-default-rtdb.firebaseio.com/products';
+      'https://hob-shop-default-rtdb.firebaseio.com/orders';
 
   List<Order> _orders = [];
 

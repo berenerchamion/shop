@@ -5,6 +5,7 @@ import '../providers/cart_provider.dart';
 import '../providers/orders_provider.dart';
 
 import '../widgets/cart_item.dart' as ci;
+import '../widgets/order_button.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
@@ -41,21 +42,7 @@ class CartScreen extends StatelessWidget {
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ), //Chip
-                  TextButton(
-                    onPressed: cart.totalAmount <= 0
-                        ? null
-                        : () {
-                            Provider.of<Orders>(
-                              context,
-                              listen: false,
-                            ).addOrder(
-                              cart.items.values.toList(),
-                              cart.totalAmount,
-                            );
-                            cart.emptyCart();
-                          },
-                    child: Text('ORDER NOW!'),
-                  ),
+                  OrderButton(cart: cart),
                 ],
               ), //Row
             ), //Padding

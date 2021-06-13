@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'product_provider.dart';
-import '../screens/user_products_screen.dart';
 import '../models/http_exception.dart';
 import '../models/product_exception.dart';
 
@@ -18,7 +17,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchProducts() async {
-    Uri uri = Uri.parse('${_baseUrl}.json');
+    Uri uri = Uri.parse('$_baseUrl.json');
     try {
       final response = await get(uri);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
