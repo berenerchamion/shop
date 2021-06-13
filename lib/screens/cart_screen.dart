@@ -42,16 +42,18 @@ class CartScreen extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ), //Chip
                   TextButton(
-                    onPressed: () {
-                      Provider.of<Orders>(
-                        context,
-                        listen: false,
-                      ).addOrder(
-                        cart.items.values.toList(),
-                        cart.totalAmount,
-                      );
-                      cart.emptyCart();
-                    },
+                    onPressed: cart.totalAmount <= 0
+                        ? null
+                        : () {
+                            Provider.of<Orders>(
+                              context,
+                              listen: false,
+                            ).addOrder(
+                              cart.items.values.toList(),
+                              cart.totalAmount,
+                            );
+                            cart.emptyCart();
+                          },
                     child: Text('ORDER NOW!'),
                   ),
                 ],
