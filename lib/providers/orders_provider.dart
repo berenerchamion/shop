@@ -9,13 +9,42 @@ import '../models/http_exception.dart';
 import '../models/product_exception.dart';
 
 class Orders with ChangeNotifier {
-  final String _baseUrl =
-      'https://hob-shop-default-rtdb.firebaseio.com/orders';
+  final String _baseUrl = 'https://hob-shop-default-rtdb.firebaseio.com/orders';
 
   List<Order> _orders = [];
 
   List<Order> get orders {
     return [..._orders];
+  }
+
+  Future<void> fetchOrders() async {
+    Uri uri = Uri.parse('$_baseUrl.json');
+    final response = await get(uri);
+    final List<Order> fetchedOrders = [];
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    extractedData.forEach((orderId, orderData) {
+      fetchedOrders.add(
+        Order(
+          id: orderId,
+          amount: orderData['amount'],
+          orderDateTime: DateTime.parse(
+            orderData['dateTime'],
+          ),
+          products: (orderData['products'] as List<dynamic>)
+              .map(
+                (cartItem) => CartItem(
+                  id: cartItem['id'],
+                  title: cartItem['title'],
+                  unitPrice: cartItem['unitPrice'],
+                  quantity: cartItem['quantity'],
+                ),
+              )
+              .toList(),
+        ),
+      );
+    });
+    _orders = fetchedOrders;
+    notifyListeners();
   }
 
   Future<void> addOrder(List<CartItem> cartContents, double total) async {
