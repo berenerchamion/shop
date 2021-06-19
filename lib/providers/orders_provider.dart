@@ -22,29 +22,33 @@ class Orders with ChangeNotifier {
     final response = await get(uri);
     final List<Order> fetchedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
-    extractedData.forEach((orderId, orderData) {
-      fetchedOrders.add(
-        Order(
-          id: orderId,
-          amount: orderData['amount'],
-          orderDateTime: DateTime.parse(
-            orderData['dateTime'],
+    if (extractedData == null) {
+      return;
+    } else {
+      extractedData.forEach((orderId, orderData) {
+        fetchedOrders.add(
+          Order(
+            id: orderId,
+            amount: orderData['amount'],
+            orderDateTime: DateTime.parse(
+              orderData['dateTime'],
+            ),
+            products: (orderData['products'] as List<dynamic>)
+                .map(
+                  (cartItem) => CartItem(
+                    id: cartItem['id'],
+                    title: cartItem['title'],
+                    unitPrice: cartItem['unitPrice'],
+                    quantity: cartItem['quantity'],
+                  ),
+                )
+                .toList(),
           ),
-          products: (orderData['products'] as List<dynamic>)
-              .map(
-                (cartItem) => CartItem(
-                  id: cartItem['id'],
-                  title: cartItem['title'],
-                  unitPrice: cartItem['unitPrice'],
-                  quantity: cartItem['quantity'],
-                ),
-              )
-              .toList(),
-        ),
-      );
-    });
-    _orders = fetchedOrders;
-    notifyListeners();
+        );
+      });
+      _orders = fetchedOrders.reversed.toList();
+      notifyListeners();
+    }
   }
 
   Future<void> addOrder(List<CartItem> cartContents, double total) async {

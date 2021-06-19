@@ -22,18 +22,22 @@ class Products with ChangeNotifier {
       final response = await get(uri);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
-      extractedData.forEach((prodId, prodData) {
-        loadedProducts.add(Product(
-          id: prodId,
-          title: prodData['title'],
-          description: prodData['description'],
-          price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
-          imageUrl: prodData['imageUrl'],
-        ));
-      });
-      _products = loadedProducts;
-      notifyListeners();
+      if (extractedData == null) {
+        return;
+      } else {
+        extractedData.forEach((prodId, prodData) {
+          loadedProducts.add(Product(
+            id: prodId,
+            title: prodData['title'],
+            description: prodData['description'],
+            price: prodData['price'],
+            isFavorite: prodData['isFavorite'],
+            imageUrl: prodData['imageUrl'],
+          ));
+        });
+        _products = loadedProducts;
+        notifyListeners();
+      }
     } catch (error) {
       print('Firebase Fetch error!');
       throw (error);
@@ -80,16 +84,17 @@ class Products with ChangeNotifier {
     if (productIndex >= 0) {
       final url = '$_baseUrl/${product.id}.json';
       Uri uri = Uri.parse(url);
-      final response = await patch(uri, body: json.encode({
-        'title': product.title,
-        'description': product.description,
-        'price': product.price,
-        'imageUrl': product.imageUrl,
-      }));
+      final response = await patch(uri,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+          }));
       if (response.statusCode >= 400) {
-        throw (HttpException('HTTP $response.statusCode error while editing product.'));
-      }
-      else {
+        throw (HttpException(
+            'HTTP $response.statusCode error while editing product.'));
+      } else {
         _products[productIndex] = product;
         notifyListeners();
       }
@@ -101,17 +106,19 @@ class Products with ChangeNotifier {
   Future<void> deleteProduct(Product product) async {
     final url = '$_baseUrl/${product.id}.json';
     Uri uri = Uri.parse(url);
-    final existingProductIndex = _products.indexWhere((p) => p.id == product.id);
+    final existingProductIndex =
+        _products.indexWhere((p) => p.id == product.id);
     var existingProduct = _products[existingProductIndex];
     //remove the product from memory
     _products.removeAt(existingProductIndex);
     notifyListeners();
     //remove the product from firebase
-    final response = await delete(uri).then((response){
+    final response = await delete(uri).then((response) {
       if (response.statusCode >= 400) {
         _products.insert(existingProductIndex, existingProduct);
         notifyListeners();
-        throw (HttpException('HTTP $response.statusCode error while deleting product.'));
+        throw (HttpException(
+            'HTTP $response.statusCode error while deleting product.'));
       }
     });
     existingProduct = null;
