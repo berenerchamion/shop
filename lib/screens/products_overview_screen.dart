@@ -27,25 +27,13 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   @override
   void initState() {
-    super.initState();
-  }
-
-  //hacky...can't do this in init state.
-  @override
-  void didChangeDependencies() {
-    if (_isInit) {
+    _isLoading = true;
+    Provider.of<Products>(context, listen: false).fetchProducts().then((_) {
       setState(() {
-        _isLoading = true;
+        _isLoading = false;
       });
-      //todo Need to add an error handler here
-      Provider.of<Products>(context).fetchProducts().then((_) {
-        setState(() {
-          _isLoading = false;
-        });
-      });
-    }
-    _isInit = false;
-    super.didChangeDependencies();
+    });
+    super.initState();
   }
 
   @override
