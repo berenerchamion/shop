@@ -24,38 +24,50 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (ctx) => Products(),
+          create: (ctx) => Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (BuildContext ctx) =>
+              Products(Provider.of<Auth>(ctx, listen: false).token, []),
+          update: (ctx, auth, previousProducts) => Products(
+            auth.token,
+            previousProducts == null ? [] : previousProducts.products,
+          ),
         ),
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
         ),
-        ChangeNotifierProvider(
-          create: (ctx) => Orders(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => Auth(),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (ctx) => Orders(Provider.of<Auth>(ctx, listen: false).token, []),
+          update: (ctx, auth, previousOrders) => Orders(
+            auth.token,
+            previousOrders == null ? [] : previousOrders.orders,
+          ),
         ),
       ],
-      child: MaterialApp(
-        title: 'HOB Shop',
-        theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
-          accentColor: Colors.deepOrange,
-          buttonColor: Colors.white,
-          splashColor: Colors.deepOrange,
-          errorColor: Colors.deepPurple,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          fontFamily: 'Lato',
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          title: 'HOB Shop',
+          theme: ThemeData(
+            primarySwatch: Colors.deepPurple,
+            accentColor: Colors.deepOrange,
+            buttonColor: Colors.white,
+            splashColor: Colors.deepOrange,
+            errorColor: Colors.deepPurple,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            fontFamily: 'Lato',
+          ),
+          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          routes: {
+            ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
+            ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+            CartScreen.routeName: (ctx) => CartScreen(),
+            OrdersScreen.routeName: (ctx) => OrdersScreen(),
+            UserProductsScreen.routeName: (cts) => UserProductsScreen(),
+            EditProductScreen.routeName: (ctx) => EditProductScreen(),
+            AuthScreen.routeName: (ctx) => AuthScreen(),
+          },
         ),
-        home: AuthScreen(),
-        routes: {
-          ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-          CartScreen.routeName: (ctx) => CartScreen(),
-          OrdersScreen.routeName: (ctx) => OrdersScreen(),
-          UserProductsScreen.routeName: (cts) => UserProductsScreen(),
-          EditProductScreen.routeName: (ctx) => EditProductScreen(),
-          AuthScreen.routeName: (ctx) => AuthScreen(),
-        },
       ),
     );
   }

@@ -10,8 +10,24 @@ class Auth with ChangeNotifier {
   String _userId;
   final String _baseUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:';
 
-  Future<void> _authenticate(String email, String password, String urlBit) async {
-    final url = 'https://identitytoolkit.googleapis.com/v1/accounts:$urlBit?key=AIzaSyBBqgWYJc-VTS9QVpKvq-vU37JnhUx0Msc';
+  bool get isAuth {
+    return token != null;
+  }
+
+  String get token {
+    if (_expiryDate != null &&
+        _expiryDate.isAfter(DateTime.now()) &&
+        _token != null) {
+      return _token;
+    } else {
+      return null;
+    }
+  }
+
+  Future<void> _authenticate(
+      String email, String password, String urlBit) async {
+    final url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:$urlBit?key=AIzaSyBBqgWYJc-VTS9QVpKvq-vU37JnhUx0Msc';
     try {
       Uri uri = Uri.parse(url);
       final response = await post(
@@ -28,11 +44,19 @@ class Auth with ChangeNotifier {
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
       }
+      _token = responseData['idToken'];
+      _expiryDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(
+            responseData['expiresIn'],
+          ),
+        ),
+      );
+      notifyListeners();
     } catch (error) {
       print(error.toString());
       throw (error);
     }
-
   }
 
   Future<void> signup(String email, String password) async {

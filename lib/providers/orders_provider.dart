@@ -10,6 +10,9 @@ import '../models/product_exception.dart';
 
 class Orders with ChangeNotifier {
   final String _baseUrl = 'https://hob-shop-default-rtdb.firebaseio.com/orders';
+  final String _authToken;
+
+  Orders(this._authToken, this._orders);
 
   List<Order> _orders = [];
 
@@ -18,7 +21,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchOrders() async {
-    Uri uri = Uri.parse('$_baseUrl.json');
+    Uri uri = Uri.parse('$_baseUrl.json?auth=$_authToken');
     final response = await get(uri);
     final List<Order> fetchedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -55,7 +58,7 @@ class Orders with ChangeNotifier {
     Response response;
     try {
       final timestamp = DateTime.now();
-      Uri uri = Uri.parse('$_baseUrl.json');
+      Uri uri = Uri.parse('$_baseUrl.json?auth=$_authToken');
 
       response = await post(uri,
           body: json.encode({

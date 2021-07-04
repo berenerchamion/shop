@@ -7,17 +7,21 @@ import '../models/product_exception.dart';
 
 class Products with ChangeNotifier {
   List<Product> _products = [];
-  final String _url =
-      'https://hob-shop-default-rtdb.firebaseio.com/products.json';
+  // final String _url =
+  //    'https://hob-shop-default-rtdb.firebaseio.com/products.json';
   final String _baseUrl =
       'https://hob-shop-default-rtdb.firebaseio.com/products';
+
+  final String _authToken;
+
+  Products(this._authToken, this._products);
 
   List<Product> get products {
     return [..._products];
   }
 
   Future<void> fetchProducts() async {
-    Uri uri = Uri.parse('$_baseUrl.json');
+    Uri uri = Uri.parse('$_baseUrl.json?auth=$_authToken');
     try {
       final response = await get(uri);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -54,7 +58,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     try {
-      Uri uri = Uri.parse('${_baseUrl}.json');
+      Uri uri = Uri.parse('$_baseUrl.json?auth=$_authToken');
       final response = await post(
         uri,
         body: json.encode({
@@ -82,7 +86,7 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(Product product) async {
     final productIndex = _products.indexWhere((p) => p.id == product.id);
     if (productIndex >= 0) {
-      final url = '$_baseUrl/${product.id}.json';
+      final url = '$_baseUrl/${product.id}.json?auth=$_authToken';
       Uri uri = Uri.parse(url);
       final response = await patch(uri,
           body: json.encode({
@@ -104,7 +108,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(Product product) async {
-    final url = '$_baseUrl/${product.id}.json';
+    final url = '$_baseUrl/$product.id.json?auth=$_authToken';
     Uri uri = Uri.parse(url);
     final existingProductIndex =
         _products.indexWhere((p) => p.id == product.id);

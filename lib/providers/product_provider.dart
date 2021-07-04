@@ -34,8 +34,8 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavoriteStatus() async {
-    final url = '$_baseUrl/${this.id}.json';
+  Future<void> toggleFavoriteStatus(String authToken) async {
+    final url = '$_baseUrl/${this.id}.json?auth=$authToken';
     Uri uri = Uri.parse(url);
     final currentFavoriteStatus = isFavorite;
     _setFavoriteStatus(!isFavorite);
