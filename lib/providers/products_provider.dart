@@ -7,35 +7,41 @@ import '../models/product_exception.dart';
 
 class Products with ChangeNotifier {
   List<Product> _products = [];
-  // final String _url =
-  //    'https://hob-shop-default-rtdb.firebaseio.com/products.json';
   final String _baseUrl =
       'https://hob-shop-default-rtdb.firebaseio.com/products';
 
   final String _authToken;
+  final String _userId;
 
-  Products(this._authToken, this._products);
+  Products(this._authToken, this._userId, this._products);
 
   List<Product> get products {
     return [..._products];
   }
 
   Future<void> fetchProducts() async {
-    Uri uri = Uri.parse('$_baseUrl.json?auth=$_authToken');
+    Uri uriProducts = Uri.parse('$_baseUrl.json?auth=$_authToken');
     try {
-      final response = await get(uri);
+      final response = await get(uriProducts);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
       if (extractedData == null) {
         return;
       } else {
+        final String url = 'https://hob-shop-default-rtdb.firebaseio.com/userFavorites/$_userId.json?auth=$_authToken';
+        Uri uriFavorites = Uri.parse(url);
+        final favoritesResponse = await get (uriFavorites);
+        final favoritesData = json.decode(favoritesResponse.body);
+        // Check the ?? below...tricky operator
+        //Basically a double check with the ternary and then the ??
+        //asks if favoritesData['prodId'] is not null use it, or if it is null return false.
         extractedData.forEach((prodId, prodData) {
           loadedProducts.add(Product(
             id: prodId,
             title: prodData['title'],
             description: prodData['description'],
             price: prodData['price'],
-            isFavorite: prodData['isFavorite'],
+            isFavorite: favoritesData == null ? false : favoritesData[prodId] ?? false,
             imageUrl: prodData['imageUrl'],
           ));
         });
@@ -66,7 +72,6 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite,
         }),
       );
       final newProduct = Product(
@@ -117,7 +122,7 @@ class Products with ChangeNotifier {
     _products.removeAt(existingProductIndex);
     notifyListeners();
     //remove the product from firebase
-    final response = await delete(uri).then((response) {
+    await delete(uri).then((response) {
       if (response.statusCode >= 400) {
         _products.insert(existingProductIndex, existingProduct);
         notifyListeners();

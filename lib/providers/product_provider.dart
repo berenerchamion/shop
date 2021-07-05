@@ -19,7 +19,7 @@ class Product with ChangeNotifier {
   bool isFavorite;
 
   final String _baseUrl =
-      'https://hob-shop-default-rtdb.firebaseio.com/products';
+      'https://hob-shop-default-rtdb.firebaseio.com/userFavorites';
   Product({
     this.id,
     this.title,
@@ -29,27 +29,31 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void _setFavoriteStatus (bool newValue) {
+  void _setFavoriteStatus(bool newValue) {
     isFavorite = newValue;
     notifyListeners();
   }
 
-  Future<void> toggleFavoriteStatus(String authToken) async {
-    final url = '$_baseUrl/${this.id}.json?auth=$authToken';
+  Future<void> toggleFavoriteStatus(String authToken, String userId) async {
+    final url = '$_baseUrl/$userId/${this.id}.json?auth=$authToken';
     Uri uri = Uri.parse(url);
     final currentFavoriteStatus = isFavorite;
     _setFavoriteStatus(!isFavorite);
     try {
-      final response = await patch(uri,
-          body: json.encode({
-            'isFavorite': isFavorite,
-          }));
+      final response = await put(
+        uri,
+        body: json.encode(
+          isFavorite,
+        ),
+      );
       if (response.statusCode >= 400) {
-        throw (HttpException('HTTP $response.statusCode error while setting product favorite value.'));
+        throw (HttpException(
+            'HTTP $response.statusCode error while setting product favorite value.'));
       }
     } catch (error) {
       _setFavoriteStatus(currentFavoriteStatus);
-      throw (ProductException('Product not found when setting favorite status.'));
+      throw (ProductException(
+          'Product not found when setting favorite status.'));
     }
   }
 }

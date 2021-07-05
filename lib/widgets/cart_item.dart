@@ -85,7 +85,7 @@ class CartItem extends StatelessWidget {
             ),
             title: Text(title),
             subtitle: Text(
-              'Unit Price: \$${price}',
+              'Unit Price: \$$price',
             ),
             trailing: Text('$quantity x'),
           ),

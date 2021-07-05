@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/cart_provider.dart';
-import '../providers/orders_provider.dart';
 
 import '../widgets/cart_item.dart' as ci;
 import '../widgets/order_button.dart';

@@ -7,23 +7,40 @@ import '../models/http_exception.dart';
 class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
-  String _userId;
-  final String _baseUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:';
-
+  String _userid;
   bool get isAuth {
     return token != null;
   }
 
-  String get token {
+  bool checkForValidSession() {
     if (_expiryDate != null &&
         _expiryDate.isAfter(DateTime.now()) &&
         _token != null) {
-      return _token;
+      return true;
     } else {
+      return false;
+    }
+  }
+
+  String get token {
+    if (checkForValidSession()) {
+      return _token;
+    }
+    else {
       return null;
     }
   }
 
+  String get userid {
+    if (checkForValidSession()) {
+      return _userid;
+    }
+    else {
+      return null;
+    }
+  }
+
+  //urlBit is the authentication method type, see signin() and signup() below.
   Future<void> _authenticate(
       String email, String password, String urlBit) async {
     final url =
@@ -45,6 +62,7 @@ class Auth with ChangeNotifier {
         throw HttpException(responseData['error']['message']);
       }
       _token = responseData['idToken'];
+      _userid = responseData['localId'];
       _expiryDate = DateTime.now().add(
         Duration(
           seconds: int.parse(

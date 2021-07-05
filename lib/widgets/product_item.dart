@@ -42,7 +42,7 @@ class ProductItem extends StatelessWidget {
               color: Theme.of(context).buttonColor,
               onPressed: () {
                 try{
-                  product.toggleFavoriteStatus(authData.token);
+                  product.toggleFavoriteStatus(authData.token, authData.userid);
                 }
                 catch(error) {
                   scaffoldMessenger.showSnackBar(SnackBar(
