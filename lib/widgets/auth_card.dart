@@ -54,7 +54,7 @@ class _AuthCardState extends State<AuthCard> {
         await Provider.of<Auth>(
           context,
           listen: false,
-        ).signin(
+        ).signIn(
           _authData['email'],
           _authData['password'],
         );
@@ -62,7 +62,7 @@ class _AuthCardState extends State<AuthCard> {
         await Provider.of<Auth>(
           context,
           listen: false,
-        ).signup(
+        ).signUp(
           _authData['email'],
           _authData['password'],
         );
