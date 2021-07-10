@@ -29,10 +29,19 @@ class OrdersScreen extends StatelessWidget {
               );
             } else {
               return Consumer<Orders>(
-                  builder: (cts, orderData, child) => ListView.builder(
+                  builder: (cts, orderData, child) {
+                    if (orderData.orders.length == 0) {
+                      return Center(
+                        child: Text('You do not have any orders yet.'),
+                      );
+                    }
+                    else {
+                      return ListView.builder(
                         itemCount: orderData.orders.length,
                         itemBuilder: (ctx, i) => OrderItem(orderData.orders[i]),
-                      ));
+                      );
+                    }
+                  });
             }
           }
         },
