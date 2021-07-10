@@ -19,8 +19,9 @@ class Products with ChangeNotifier {
     return [..._products];
   }
 
-  Future<void> fetchProducts() async {
-    Uri uriProducts = Uri.parse('$_baseUrl.json?auth=$_authToken');
+  Future<void> fetchProducts([bool filterByUser = false]) async {
+    final String filter = filterByUser? '&orderBy="creatorId"&equalTo="$_userId"' : '';
+    Uri uriProducts = Uri.parse('$_baseUrl.json?auth=$_authToken&$filter');
     try {
       final response = await get(uriProducts);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -72,6 +73,7 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
+          'creatorId': _userId,
         }),
       );
       final newProduct = Product(
