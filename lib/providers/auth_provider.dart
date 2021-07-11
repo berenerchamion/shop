@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
+import 'dart:async';
 
 import '../models/http_exception.dart';
 
@@ -11,6 +12,7 @@ class Auth with ChangeNotifier {
   bool get isAuth {
     return token != null;
   }
+  Timer _sessionTimer;
 
   bool checkForValidSession() {
     if (_expiryDate != null &&
@@ -70,6 +72,7 @@ class Auth with ChangeNotifier {
           ),
         ),
       );
+      _invalidateSession();
       notifyListeners();
     } catch (error) {
       print(error.toString());
@@ -89,6 +92,21 @@ class Auth with ChangeNotifier {
     _token = null;
     _expiryDate = null;
     _userid = null;
+    if (_sessionTimer != null) {
+      _sessionTimer.cancel();
+      _sessionTimer = null;
+    }
+
     notifyListeners();
   }
+
+  void _invalidateSession() {
+    if (_sessionTimer != null) {
+      _sessionTimer.cancel();
+    }
+
+    final countdown = _expiryDate.difference(DateTime.now()).inSeconds;
+    _sessionTimer = Timer(Duration(seconds: countdown), signOut);
+  }
+
 }
